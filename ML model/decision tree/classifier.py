@@ -1,18 +1,23 @@
 import numpy as np
 
 
-class DecisionTreeRegressor:
+class DecisionTreeClassifier:
     def __init__(self, max_depth=None, min_samples_split=2):
         self.max_depth = max_depth
         self.min_samples_split = min_samples_split
         self.tree = None
 
-    def mse(self, y):
-        """Calculate Mean Squared Error for a split."""
+    def gini(self, y):
+        """Calculate Gini impurity using the formula."""
         if len(y) == 0:
             return 0
-        mean_y = np.mean(y)
-        return np.mean((y - mean_y) ** 2)
+        classes, counts = np.unique(y, return_counts=True)
+        total_samples = len(y)
+        gini_impurity = 1
+        for count in counts:
+            probability = count / total_samples
+            gini_impurity -= probability ** 2
+        return gini_impurity
 
     def split(self, X, y, feature, threshold):
         """Split the dataset based on a feature and threshold."""
@@ -37,8 +42,8 @@ class DecisionTreeRegressor:
                 if len(y_left) < self.min_samples_split or len(y_right) < self.min_samples_split:
                     continue
 
-                metric = (len(y_left) / len(y)) * self.mse(y_left) + \
-                         (len(y_right) / len(y)) * self.mse(y_right)
+                metric = (len(y_left) / len(y)) * self.gini(y_left) + \
+                         (len(y_right) / len(y)) * self.gini(y_right)
 
                 if metric < best_metric:
                     best_metric = metric
@@ -54,12 +59,14 @@ class DecisionTreeRegressor:
 
         if len(y) < self.min_samples_split or (self.max_depth and depth >= self.max_depth):
             # Leaf node
-            return {"type": "leaf", "value": np.mean(y)}
+            classes, counts = np.unique(y, return_counts=True)
+            return {"type": "leaf", "value": classes[np.argmax(counts)]}
 
         feature, threshold, splits = self.best_split(X, y)
         if not splits:
             # If no split is found
-            return {"type": "leaf", "value": np.mean(y)}
+            classes, counts = np.unique(y, return_counts=True)
+            return {"type": "leaf", "value": classes[np.argmax(counts)]}
 
         X_left, X_right, y_left, y_right = splits
         left_child = self.build_tree(X_left, y_left, depth + 1)
@@ -104,15 +111,15 @@ if __name__ == "__main__":
                         [1.3, 3.0],
                         [3.0, 3.1],
                         [2.5, 0.5]])
-    y_train = np.array([10.0, 20.0, 15.0, 25.0, 30.0])
+    y_train = np.array([0, 1, 0, 1, 1])
 
     # Test Dataset
-    X_test = np.array([[1.5, 2.0],  # Expected output ~ 10
-                       [2.5, 1.0],  # Expected output ~ 25
-                       [3.0, 3.0]])  # Expected output ~ 25
+    X_test = np.array([[1.5, 2.0],  # Expected output ~ 0
+                       [2.5, 1.0],  # Expected output ~ 1
+                       [3.0, 3.0]])  # Expected output ~ 1
 
-    # Train Decision Tree Regressor
-    tree_regressor = DecisionTreeRegressor(max_depth=3, min_samples_split=2)
-    tree_regressor.fit(X_train, y_train)
-    preds = tree_regressor.predict(X_test)
+    # Train Decision Tree Classifier
+    tree_classifier = DecisionTreeClassifier(max_depth=3, min_samples_split=2)
+    tree_classifier.fit(X_train, y_train)
+    preds = tree_classifier.predict(X_test)
     print("Predictions:", preds)

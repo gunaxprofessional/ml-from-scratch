@@ -33,7 +33,6 @@ class NaiveBayes:
                 mean = np.mean(feature_values)
                 var = np.var(feature_values)
                 self.feature_likelihoods[c][feature_idx] = (mean, var)
-                print(self.feature_likelihoods[c][feature_idx], c, feature_idx)
 
     def _gaussian_pdf(self, x, mean, var):
         """Compute Gaussian Probability Density Function"""
