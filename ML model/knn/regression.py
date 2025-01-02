@@ -2,9 +2,6 @@ import numpy as np
 from sklearn.neighbors import KNeighborsRegressor
 
 
-import numpy as np
-
-
 class KNearestNeighborsCustom:
     def __init__(self, k=3, metric="euclidean"):
         self.k = k
@@ -15,9 +12,6 @@ class KNearestNeighborsCustom:
             return np.sqrt(np.sum((point1 - point2) ** 2))
         elif self.metric == "manhattan":
             return np.sum(np.abs(point1 - point2))
-        elif self.metric == "minkowski":
-            p = 3
-            return np.sum(np.abs(point1 - point2) ** p) ** (1 / p)
         else:
             raise ValueError("Unsupported distance metric!")
 
@@ -47,7 +41,7 @@ knn_regressor.fit(X_train, y_train)
 custom_regression_predictions = knn_regressor.predict(X_test)
 print("Custom KNN Regression Predictions:", custom_regression_predictions)
 
-
+# Scikit-Learn KNN for Regression
 sklearn_knn_regressor = KNeighborsRegressor(n_neighbors=2, metric="euclidean")
 sklearn_knn_regressor.fit(X_train, y_train)
 sklearn_regression_predictions = sklearn_knn_regressor.predict(X_test)

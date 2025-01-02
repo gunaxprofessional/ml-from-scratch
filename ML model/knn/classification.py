@@ -2,10 +2,10 @@ import numpy as np
 from sklearn.neighbors import KNeighborsClassifier
 from collections import Counter
 
-# Custom KNN Class (as implemented earlier)
+# Custom KNN Class
 
 
-class KNearestNeighborsCUstom:
+class KNearestNeighborsCustom:
     def __init__(self, k=3, metric="euclidean"):
         self.k = k
         self.metric = metric
@@ -15,9 +15,6 @@ class KNearestNeighborsCUstom:
             return np.sqrt(np.sum((point1 - point2) ** 2))
         elif self.metric == "manhattan":
             return np.sum(np.abs(point1 - point2))
-        elif self.metric == "minkowski":
-            p = 3
-            return np.sum(np.abs(point1 - point2) ** p) ** (1 / p)
         else:
             raise ValueError("Unsupported distance metric!")
 
@@ -43,7 +40,7 @@ y_train = np.array([0, 0, 1, 1])
 X_test = np.array([[1.5, 2.5], [4, 5]])
 
 # Custom KNN
-custom_knn = KNearestNeighborsCUstom(k=3, metric="euclidean")
+custom_knn = KNearestNeighborsCustom(k=3, metric="euclidean")
 custom_knn.fit(X_train, y_train)
 custom_predictions = custom_knn.predict(X_test)
 print("Custom KNN Predictions:", custom_predictions)
